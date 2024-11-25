@@ -7,10 +7,11 @@
 import requests
 import pandas as pd
 import matplotlib.pyplot as plt
+
 #this is all the information that needs to be provided so the player can be identified and the
 #api requests won't be denied
 #my Riot API Key
-api_key = 'my api kay'
+api_key = 'your api key here'
 #My name in League of Legends
 gameName = 'Volani'
 #region I play in
@@ -244,17 +245,131 @@ def make_damage_graphs(ax, row, col, participant_info):
 # List of all participants' puuids
 puuids = [participant['puuid'] for participant in match_info['info']['participants']]
 
-# Create a 2x5 subplot
-fig, axs = plt.subplots(2, 5, figsize=(20, 10))
 
-# Iterate over the participants and create graphs
-for puuid in puuids:
-    participant_info = get_player_info_from_puuid(puuid, match_info)
-    row = participant_info['playerSubteamId']
-    col = participant_info['participantId']-1
-    if make_sure_participant_info_is_real(participant_info):
-        make_damage_graphs(axs, row, col, participant_info)
+import plotly.graph_objects as go
 
-plt.tight_layout()
-plt.show()
 
+def make_damage_taken_graphs_plotly(fig, row, col, participant_info):
+    fig.add_trace(
+        go.Bar(
+            x=[participant_info['championName']],
+            y=[participant_info['physicalDamageTaken']],
+            name='Physical Damage Taken ' + str(participant_info['physicalDamageTaken']),
+            marker_color='orange'),
+        row=row, col=col)
+    fig.add_trace(
+        go.Bar(
+            x=[participant_info['championName']],
+            y=[participant_info['magicDamageTaken']],
+            name='Magic Damage Taken ' + str(participant_info['magicDamageTaken']),
+            marker_color='blue',
+            base=participant_info['physicalDamageTaken']),
+        row=row, col=col)
+    fig.add_trace(
+        go.Bar(
+            x=[participant_info['championName']],
+            y=[participant_info['trueDamageTaken']],
+            name='True Damage Taken ' + str(participant_info['trueDamageTaken']),
+            marker_color='silver',
+            base=participant_info['physicalDamageTaken'] + participant_info['magicDamageTaken']),
+        row=row, col=col)
+    fig.update_layout(barmode='stack', showlegend=False)
+
+def make_damage_dealt_graphs_plotly(fig, row, col, participant_info):
+    fig.add_trace(
+        go.Bar(
+            x=[participant_info['championName']],
+            y=[participant_info['physicalDamageDealt']],
+            name='Physical Damage Dealt ' + str(participant_info['physicalDamageDealt']),
+            marker_color='orange'
+        ),
+        row=row, col=col)
+    fig.add_trace(
+        go.Bar(
+            x=[participant_info['championName']],
+            y=[participant_info['magicDamageDealt']],
+            name='Magic Damage Dealt ' + str(participant_info['magicDamageDealt']),
+            marker_color='blue',
+            base=participant_info['physicalDamageDealt']),
+        row=row, col=col)
+    fig.add_trace(
+        go.Bar(
+            x=[participant_info['championName']],
+            y=[participant_info['trueDamageDealt']],
+            name='True Damage Dealt ' + str(participant_info['trueDamageDealt']),
+            marker_color='silver',
+            base=participant_info['physicalDamageDealt'] + participant_info['magicDamageDealt']),
+        row=row, col=col)
+    fig.update_layout(
+        barmode='stack',
+        showlegend=False)
+
+def make_damage_dealt_champions_graphs_plotly(fig, row, col, participant_info):
+    fig.add_trace(
+        go.Bar(
+            x=[participant_info['championName']],
+            y=[participant_info['physicalDamageDealtToChampions']],
+            name='Physical Damage Dealt To Champions ' + str(participant_info['physicalDamageDealtToChampions']),
+            marker_color='orange'),
+        row=row, col=col)
+    fig.add_trace(
+        go.Bar(
+            x=[participant_info['championName']],
+            y=[participant_info['magicDamageDealtToChampions']],
+            name='Magic Damage Dealt To Champions ' + str(participant_info['magicDamageDealtToChampions']),
+            marker_color='blue',
+            base=participant_info['physicalDamageDealtToChampions']),
+        row=row, col=col)
+    fig.add_trace(
+        go.Bar(
+            x=[participant_info['championName']],
+            y=[participant_info['trueDamageDealtToChampions']],
+            name='True Damage Dealt To Champions ' + str(participant_info['trueDamageDealtToChampions']),
+            marker_color='silver',
+            base=participant_info['physicalDamageDealtToChampions'] + participant_info['magicDamageDealtToChampions']),
+        row=row, col=col)
+    fig.update_layout(
+        barmode='stack',
+        showlegend=False)
+from plotly.subplots import make_subplots
+fig = make_subplots(rows=2, cols=5, shared_yaxes=True)
+make_damage_taken_graphs_plotly(fig, 1, 1, get_player_info_from_puuid(puuids[0], match_info))
+make_damage_taken_graphs_plotly(fig, 1, 2, get_player_info_from_puuid(puuids[1], match_info))
+make_damage_taken_graphs_plotly(fig, 1, 3, get_player_info_from_puuid(puuids[2], match_info))
+make_damage_taken_graphs_plotly(fig, 1, 4, get_player_info_from_puuid(puuids[3], match_info))
+make_damage_taken_graphs_plotly(fig, 1, 5, get_player_info_from_puuid(puuids[4], match_info))
+make_damage_taken_graphs_plotly(fig, 2, 1, get_player_info_from_puuid(puuids[5], match_info))
+make_damage_taken_graphs_plotly(fig, 2, 2, get_player_info_from_puuid(puuids[6], match_info))
+make_damage_taken_graphs_plotly(fig, 2,3, get_player_info_from_puuid(puuids[7], match_info))
+make_damage_taken_graphs_plotly(fig, 2, 4, get_player_info_from_puuid(puuids[8], match_info))
+make_damage_taken_graphs_plotly(fig, 2, 5, get_player_info_from_puuid(puuids[9], match_info))
+fig.update_layout(title='Damage Taken for Every Champion in MatchID ' + str(recent_match_history[0]))
+fig.show()
+
+damage_dealt_fig = make_subplots(rows=2, cols=5, shared_yaxes=True)
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 1, 1, get_player_info_from_puuid(puuids[0], match_info))
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 1, 2, get_player_info_from_puuid(puuids[1], match_info))
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 1, 3, get_player_info_from_puuid(puuids[2], match_info))
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 1, 4, get_player_info_from_puuid(puuids[3], match_info))
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 1, 5, get_player_info_from_puuid(puuids[4], match_info))
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 2, 1, get_player_info_from_puuid(puuids[5], match_info))
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 2, 2, get_player_info_from_puuid(puuids[6], match_info))
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 2,3, get_player_info_from_puuid(puuids[7], match_info))
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 2, 4, get_player_info_from_puuid(puuids[8], match_info))
+make_damage_dealt_graphs_plotly(damage_dealt_fig, 2, 5, get_player_info_from_puuid(puuids[9], match_info))
+damage_dealt_fig.update_layout(title='Damage Dealt by Every Champion in MatchID ' + str(recent_match_history[0]))
+damage_dealt_fig.show()
+
+damage_dealt_champions_fig = make_subplots(rows=2, cols=5, shared_yaxes=True)
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1,1, get_player_info_from_puuid(puuids[0], match_info))
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1, 2, get_player_info_from_puuid(puuids[1], match_info))
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1, 3, get_player_info_from_puuid(puuids[2], match_info))
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1, 4, get_player_info_from_puuid(puuids[3], match_info))
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1, 5, get_player_info_from_puuid(puuids[4], match_info))
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 1, get_player_info_from_puuid(puuids[5], match_info))
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 2, get_player_info_from_puuid(puuids[6], match_info))
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 3, get_player_info_from_puuid(puuids[7], match_info))
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 4, get_player_info_from_puuid(puuids[8], match_info))
+make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 5, get_player_info_from_puuid(puuids[9], match_info))
+damage_dealt_champions_fig.update_layout(title='Damage Dealt to Champions by Every Champion in MatchID ' + str(recent_match_history[0]))
+damage_dealt_champions_fig.show()
