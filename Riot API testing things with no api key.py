@@ -374,6 +374,9 @@ make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 5, get_
 damage_dealt_champions_fig.update_layout(title='Damage Dealt to Champions by Every Champion in MatchID ' + str(recent_match_history[0]))
 damage_dealt_champions_fig.show()
 
+import dash
+from dash import dcc, html
+from dash.dependencies import Input, Output
 # Initialize the Dash app
 app = dash.Dash(__name__)
 
