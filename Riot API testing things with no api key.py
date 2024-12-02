@@ -373,3 +373,118 @@ make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 4, get_
 make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 5, get_player_info_from_puuid(puuids[9], match_info))
 damage_dealt_champions_fig.update_layout(title='Damage Dealt to Champions by Every Champion in MatchID ' + str(recent_match_history[0]))
 damage_dealt_champions_fig.show()
+
+# Initialize the Dash app
+app = dash.Dash(__name__)
+
+# Define the layout of the app
+app.layout = html.Div(
+    style={'backgroundColor': 'black', 'textAlign': 'center'},
+    children=[
+        html.H1(
+            children='League of Legends Match Data',
+            style={'color': 'white'}
+        ),
+        dcc.Dropdown(
+            id='dropdown',
+            options=[{'label': match_id, 'value': match_id} for match_id in recent_match_history],
+            value=recent_match_history[0],
+            style={'width': '50%', 'margin': 'auto'}
+        ),
+        dcc.Graph(id='damage-taken-graph'),
+        dcc.Graph(id='damage-dealt-graph'),
+        dcc.Graph(id='damage-dealt-champions-graph')
+    ]
+)
+
+
+# Define the callback to update the graphs based on dropdown selection
+@app.callback(
+    [Output('damage-taken-graph', 'figure'),
+     Output('damage-dealt-graph', 'figure'),
+     Output('damage-dealt-champions-graph', 'figure')],
+    [Input('dropdown', 'value')]
+)
+def update_graphs(selected_match):
+    match_info = get_match_info(selected_match)
+
+    # Create Damage Taken Graph
+    damage_taken_fig = make_subplots(rows=2, cols=5, shared_yaxes=True)
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 1, 1,
+                                              get_player_info_from_puuid(puuids[0], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 1, 2,
+                                              get_player_info_from_puuid(puuids[1], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 1, 3,
+                                              get_player_info_from_puuid(puuids[2], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 1, 4,
+                                              get_player_info_from_puuid(puuids[3], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 1, 5,
+                                              get_player_info_from_puuid(puuids[4], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 2, 1,
+                                              get_player_info_from_puuid(puuids[5], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 2, 2,
+                                              get_player_info_from_puuid(puuids[6], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 2, 3,
+                                              get_player_info_from_puuid(puuids[7], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 2, 4,
+                                              get_player_info_from_puuid(puuids[8], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_taken_fig, 2, 5,
+                                              get_player_info_from_puuid(puuids[9], match_info))
+    damage_taken_fig.update_layout(title=f'Damage Taken for Every Champion in MatchID {selected_match}')
+
+    # Create Damage Dealt Graph
+    damage_dealt_fig = make_subplots(rows=1, cols=1)
+    damage_dealt_fig = make_subplots(rows=2, cols=5, shared_yaxes=True)
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 1, 1,
+                                              get_player_info_from_puuid(puuids[0], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 1, 2,
+                                              get_player_info_from_puuid(puuids[1], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 1, 3,
+                                              get_player_info_from_puuid(puuids[2], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 1, 4,
+                                              get_player_info_from_puuid(puuids[3], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 1, 5,
+                                              get_player_info_from_puuid(puuids[4], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 2, 1,
+                                              get_player_info_from_puuid(puuids[5], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 2, 2,
+                                              get_player_info_from_puuid(puuids[6], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 2, 3,
+                                              get_player_info_from_puuid(puuids[7], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 2, 4,
+                                              get_player_info_from_puuid(puuids[8], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_fig, 2, 5,
+                                              get_player_info_from_puuid(puuids[9], match_info))
+    damage_dealt_fig.update_layout(title=f'Damage Dealt by Every Champion in MatchID {selected_match}')
+
+    # Create Damage Dealt to Champions Graph
+    damage_dealt_champions_fig = make_subplots(rows=2, cols=5, shared_yaxes=True)
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1, 1,
+                                              get_player_info_from_puuid(puuids[0], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1, 2,
+                                              get_player_info_from_puuid(puuids[1], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1, 3,
+                                              get_player_info_from_puuid(puuids[2], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1, 4,
+                                              get_player_info_from_puuid(puuids[3], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 1, 5,
+                                              get_player_info_from_puuid(puuids[4], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 1,
+                                              get_player_info_from_puuid(puuids[5], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 2,
+                                              get_player_info_from_puuid(puuids[6], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 3,
+                                              get_player_info_from_puuid(puuids[7], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 4,
+                                              get_player_info_from_puuid(puuids[8], match_info))
+    make_damage_dealt_champions_graphs_plotly(damage_dealt_champions_fig, 2, 5,
+                                              get_player_info_from_puuid(puuids[9], match_info))
+    damage_dealt_champions_fig.update_layout(
+        title=f'Damage Dealt to Champions by Every Champion in MatchID {selected_match}')
+
+    return damage_taken_fig, damage_dealt_fig, damage_dealt_champions_fig
+
+
+# Run the app
+if __name__ == '__main__':
+    app.run_server(debug=False)
