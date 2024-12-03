@@ -482,6 +482,11 @@ app.layout = html.Div(
 #function to update the graphs when the dropdown selection is changed
 def update_graphs(selected_match):
     match_info = get_match_info(selected_match)
+    puuids = []
+    # loop over the puuids in the match info
+    for participant in match_info['info']['participants']:
+        # put the puuid in the list
+        puuids.append(participant['puuid'])
 
     # Update the Damage Taken Graph
     damage_taken_fig = make_subplots(rows=2, cols=5, shared_yaxes=True)
