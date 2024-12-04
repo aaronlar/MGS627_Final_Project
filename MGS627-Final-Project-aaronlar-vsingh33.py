@@ -11,7 +11,7 @@ from dash.dependencies import Input, Output
 #this is all the information that needs to be provided so the player can be identified and the
 #api requests won't be denied
 #Riot API Key
-api_key = 'RGAPI-6c333ea6-2105-4b2f-8fd4-410919d8792b'
+api_key = ''
 #Name in League of Legends
 gameName = 'Volani'
 #region of player
