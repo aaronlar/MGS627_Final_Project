@@ -4,13 +4,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+import plotly.express as px
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
 #this is all the information that needs to be provided so the player can be identified and the
 #api requests won't be denied
 #Riot API Key
-api_key = 'your api key here'
+api_key = 'RGAPI-6c333ea6-2105-4b2f-8fd4-410919d8792b'
 #Name in League of Legends
 gameName = 'Volani'
 #region of player
@@ -120,7 +121,7 @@ def getChampMastery():
         champMasteryWithNames[champIDToName] = champion['championPoints']
     return champMasteryWithNames
 #calling the function
-
+champ_mastery = getChampMastery()
 
 #making a function to convert the champMasteryWithNames dictionary into 2 lists that are then used
 #as values in a separate dictionary that is then used to make a pandas dataframe which is
@@ -159,38 +160,9 @@ def informativeStatement(champMasteryDict):
     championWithMaxMastery = str(champMasteryDataFrame.loc[maxMasteryIndex, 'Champion Names'])
     #printing an informative statement about the maximum value of mastery points and the champion with the highest number
     #of mastery points of the player name used
-    print('The Champion that ' +gameName+ ' has the most mastery points on is ' +championWithMaxMastery+
-          ' the amount of of Mastery Points on ' +championWithMaxMastery+ ' is ' +maxMasteryPoints)
     return champMasteryDataFrame
 #calling the function
-
-#making a function to just capture the top 10 champions in the pandas dataframe and then graph them using matplotlib
-def graphMax10(champMasteryDataFrame):
-    """
-    a function to capture the top 10 champions in a pandas dataframe created in the informativeStatement function
-    and then graph them using matplotlib
-    :param champMasteryDataFrame: this is the dataframe output of informtativeSatement
-    :return: a matplotlib graph that shows the mastery points of the 10 champions that have the most
-    mastery points for the account specified at the beginning
-    """
-    #making a new dataframe that only includes the top 10 champions by Mastery Points
-    max10Champs = champMasteryDataFrame.sort_values(by='Champion Mastery', ascending=False).head(10)
-    #graphing, in order to make the graph is useful and is actually graphing the mastery points of each champion I am
-    #leaning on some prior experience with matplotlib to make the graph I actually want
-    #making the axis
-    xAxis = max10Champs['Champion Names']
-    yAxis = max10Champs['Champion Mastery']
-    #making it a bar graph
-    plt.bar(xAxis,yAxis)
-    #adding labels
-    plt.xlabel('Champion Names')
-    plt.ylabel('Mastery Points')
-    #titling the graph
-    plt.title(gameName + "'s Top 10 Highest Mastery Point Champions")
-    #showing the graph
-    plt.tight_layout()
-    plt.show()
-#calling the function
+champ_mastery_df = informativeStatement(champ_mastery)
 
 def get_recent_match_history(puuid):
     """
@@ -440,7 +412,12 @@ def make_damage_dealt_champions_graphs_plotly(fig, row, col, participant_info):
         row=row, col=col)
     #stack the bars and don't show the legend
     fig.update_layout(barmode='stack', showlegend=False)
-
+#getting the top 10 champions by champion mastery
+max10Champs = champ_mastery_df.sort_values(by='Champion Mastery', ascending=False).head(10)
+#making a plotly graph of the top 10 champions by mastery
+champ_mastery_fig = px.bar(max10Champs, x='Champion Names', y='Champion Mastery',
+                 labels={'Champion Names': 'Champion Names', 'Champion Mastery': 'Mastery Points'},
+                 title=gameName + "'s Top 10 Highest Mastery Point Champions")
 #this is where the Dash app begins
 # Initialize the Dash app
 app = dash.Dash(__name__)
@@ -455,6 +432,7 @@ app.layout = html.Div(
             children='League of Legends Match Data',
             style={'color': 'white'}
         ),
+        dcc.Graph(id='mastery-graph', figure=champ_mastery_fig),
         #a dropdown with the match id's from recent match history to pick from, base value is the first match id in the list
         dcc.Dropdown(
             id='dropdown',
@@ -470,7 +448,6 @@ app.layout = html.Div(
         dcc.Graph(id='damage-dealt-champions-graph')
     ]
 )
-
 
 #the callback to update the graphs based on dropdown selection
 @app.callback(
